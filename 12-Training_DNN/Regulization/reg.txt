@@ -1,0 +1,176 @@
+
+L1 AND L2 REGULARIZATION IN DEEP LEARNING
+=========================================
+
+1. WHAT IS REGULARIZATION?
+--------------------------
+
+Regularization is a technique used in Machine Learning
+and Deep Learning to prevent overfitting.
+
+It controls model weights to improve generalization
+on unseen data.
+
+Two common techniques are:
+- L1 Regularization
+- L2 Regularization
+
+
+2. L1 REGULARIZATION (LASSO)
+----------------------------
+
+L1 Regularization adds the absolute values of weights
+to the original loss function.
+
+Formula:
+
+Total Loss = Original Loss + Lambda * Sum(|weights|)
+
+Example:
+
+Weights = [2, -3, 4]
+
+L1 Penalty:
+
+|2| + |-3| + |4| = 9
+
+If Lambda = 0.1:
+
+L1 Penalty = 0.1 * 9 = 0.9
+
+Main Points:
+- Can make some weights exactly zero.
+- Produces a sparse model.
+- Can help with feature selection.
+- Also known as Lasso Regularization.
+
+
+3. L2 REGULARIZATION (RIDGE)
+----------------------------
+
+L2 Regularization adds the squared values of weights
+to the original loss function.
+
+Formula:
+
+Total Loss = Original Loss + Lambda * Sum(weights^2)
+
+Example:
+
+Weights = [2, -3, 4]
+
+L2 Penalty:
+
+2^2 + (-3)^2 + 4^2 = 29
+
+If Lambda = 0.1:
+
+L2 Penalty = 0.1 * 29 = 2.9
+
+Main Points:
+- Encourages weights to become smaller.
+- Usually does not make weights exactly zero.
+- Helps control large weight values.
+- Also known as Ridge Regularization.
+
+
+4. DIFFERENCE BETWEEN L1 AND L2
+-------------------------------
+
+L1 Regularization:
+- Uses absolute values of weights.
+- Can make some weights exactly zero.
+- Produces sparse models.
+- Useful for feature selection.
+
+L2 Regularization:
+- Uses squared values of weights.
+- Encourages smaller weights.
+- Usually keeps weights nonzero.
+- Helps control model complexity.
+
+
+5. L1 REGULARIZATION IN PYTORCH
+-------------------------------
+
+l1_lambda = 0.01
+
+l1_penalty = sum(
+    torch.sum(torch.abs(param))
+    for param in model.parameters()
+)
+
+loss = original_loss + l1_lambda * l1_penalty
+
+
+6. L2 REGULARIZATION IN PYTORCH
+-------------------------------
+
+L2-style regularization can be applied using
+weight_decay in the optimizer.
+
+Example:
+
+optimizer = torch.optim.SGD(
+    model.parameters(),
+    lr=0.01,
+    weight_decay=0.01
+)
+
+
+7. REAL-LIFE EXAMPLE
+--------------------
+
+Imagine a model predicting house prices using
+different features:
+
+- House size
+- Number of bedrooms
+- Location
+- Parking
+- Garden
+
+L1:
+Can make the weights of less useful features zero.
+
+L2:
+Encourages the weights of features to become smaller
+without usually making them exactly zero.
+
+
+8. QUICK REVISION
+-----------------
+
+L1 = Lambda * Sum(|weights|)
+
+L2 = Lambda * Sum(weights^2)
+
+L1:
+Can make weights exactly zero.
+
+L2:
+Encourages smaller weights.
+
+L1 is also called Lasso.
+
+L2 is also called Ridge.
+
+Both techniques help reduce overfitting.
+
+
+9. CONCLUSION
+-------------
+
+L1 and L2 are important regularization techniques
+in Machine Learning and Deep Learning.
+
+L1 can produce sparse models by making some weights
+exactly zero.
+
+L2 encourages smaller weight values and controls
+the magnitude of model weights.
+
+Both techniques help improve model generalization.
+
+=========================================
+END OF NOTES

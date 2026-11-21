@@ -1,0 +1,120 @@
+
+MAX-NORM REGULARIZATION IN DEEP LEARNING
+========================================
+
+1. WHAT IS MAX-NORM REGULARIZATION?
+-----------------------------------
+
+Max-Norm Regularization is a technique used in Deep Learning
+to prevent overfitting.
+
+It limits the maximum size (L2 norm) of a neuron's weight
+vector to a specified value.
+
+In simple words:
+It prevents weights from becoming too large.
+
+2. HOW DOES IT WORK?
+--------------------
+
+Suppose a neuron has these weights:
+
+w = [3, 4]
+
+Its L2 norm is:
+
+||w|| = sqrt(3^2 + 4^2)
+      = sqrt(25)
+      = 5
+
+Suppose the maximum allowed norm is:
+
+r = 3
+
+Since 5 is greater than 3, Max-Norm scales down
+the weights.
+
+Formula:
+
+w_new = w * min(1, r / ||w||)
+
+Therefore:
+
+w_new = w * (3 / 5)
+
+New weights:
+
+w_new = [1.8, 2.4]
+
+Now the weight norm is 3.
+
+3. MATHEMATICAL CONSTRAINT
+--------------------------
+
+||w||_2 <= r
+
+Where:
+
+w      = Weight vector
+||w||2 = L2 norm of weights
+r      = Maximum allowed norm
+
+4. WHY USE MAX-NORM?
+--------------------
+
+- Helps prevent overfitting.
+- Controls large weight values.
+- Can improve model generalization.
+- Can be combined with Dropout.
+
+5. MAX-NORM VS L2 REGULARIZATION
+-------------------------------
+
+L2 Regularization:
+- Adds a penalty to the loss function.
+- Encourages smaller weights.
+
+Max-Norm Regularization:
+- Sets a maximum limit on weight norms.
+- Scales down weights when they exceed the limit.
+
+
+The Max-Norm constraint is applied after the
+optimizer updates the weights.
+
+6. MAX-NORM WITH DROPOUT
+------------------------
+
+Dropout:
+Randomly disables some neurons during training.
+
+Max-Norm:
+Limits the magnitude of weight vectors.
+
+Both techniques can be used together to help
+reduce overfitting.
+
+7. KEY POINTS
+-------------
+
+- Max-Norm is a weight constraint.
+- It commonly uses the L2 norm.
+- It limits the maximum norm of weight vectors.
+- It does not directly add a penalty to the loss.
+- PyTorch provides torch.renorm() for this purpose.
+- Apply the constraint after optimizer.step().
+
+8. CONCLUSION
+--------------
+
+Max-Norm Regularization controls the size of neural
+network weight vectors.
+
+If a weight vector exceeds the specified maximum norm,
+its weights are scaled down.
+
+It is a useful regularization technique to study
+alongside L1, L2 and Dropout.
+
+========================================
+END OF NOTES
