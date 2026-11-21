@@ -1,0 +1,91 @@
+# Dropout – Deep Learning Notes
+## Hands-On Machine Learning with Scikit-Learn, Keras, and PyTorch (3rd Edition)
+
+### 1. What is Dropout?
+Dropout is a regularization technique used in neural networks to reduce overfitting.
+
+During training, dropout randomly disables a fraction of neurons in a layer. This prevents the network from depending too heavily on specific neurons.
+
+### 2. Why Do We Use Dropout?
+- To reduce overfitting.
+- To improve model generalization.
+- To prevent neurons from becoming overly dependent on each other.
+- To make neural networks more robust.
+
+### 3. How Does Dropout Work?
+Suppose a neural network layer contains 100 neurons and the dropout rate is 0.2.
+
+During each training step:
+- 20% of neurons are randomly deactivated.
+- 80% of neurons remain active.
+- A different random selection can be disabled in the next training step.
+
+**Example:**
+
+Dropout Rate = 0.2 (20%)
+
+Active Neurons = 100 × (1 - 0.2) = 80
+
+### 4. Dropout in PyTorch
+
+```python
+import torch
+import torch.nn as nn
+
+model = nn.Sequential(
+    nn.Linear(784, 256),
+    nn.ReLU(),
+    nn.Dropout(p=0.2),
+    nn.Linear(256, 10)
+)
+```
+
+Here:
+- `nn.Dropout(p=0.2)` randomly disables 20% of the neurons during training.
+- Dropout helps reduce overfitting.
+- During evaluation, dropout is automatically disabled when using `model.eval()`.
+
+### 5. Dropout in Keras
+
+```python
+from tensorflow import keras
+
+model = keras.Sequential([
+    keras.layers.Dense(256, activation="relu"),
+    keras.layers.Dropout(0.2),
+    keras.layers.Dense(10, activation="softmax")
+])
+```
+
+### 6. Training vs Evaluation
+
+**Training Mode:**
+- Random neurons are deactivated.
+- Dropout is active.
+
+**Evaluation Mode:**
+- Dropout is disabled.
+- All neurons participate in predictions.
+
+### 7. Real-Life Example
+
+Imagine a cricket team with 11 players.
+
+If the team always depends on one star player, it may struggle when that player is unavailable.
+
+Dropout works similarly: it forces a neural network to learn useful patterns through different combinations of neurons instead of depending on only a few.
+
+### 8. Important Points
+- Dropout is a regularization technique.
+- It helps prevent overfitting.
+- Dropout rate is usually between 0 and 1.
+- Higher dropout rates remove more neurons during training.
+- Too much dropout can cause underfitting.
+- Dropout is disabled during inference/evaluation.
+
+### 9. Key Takeaway
+
+Dropout improves neural network generalization by randomly deactivating neurons during training, encouraging the network to learn more robust features.
+
+**Topic:** Deep Learning – Regularization  
+**Source:** Hands-On Machine Learning with Scikit-Learn, Keras, and PyTorch (3rd Edition)

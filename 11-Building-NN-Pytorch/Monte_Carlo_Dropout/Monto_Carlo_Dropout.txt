@@ -1,0 +1,93 @@
+MONTE CARLO (MC) DROPOUT
+========================
+
+What it is
+----------
+MC Dropout is a simple way to get uncertainty estimates from a neural network.
+Normally, dropout is switched OFF at test time. In MC Dropout, dropout stays
+ON during inference, and the same input is passed through the network many
+times (T stochastic forward passes). Each pass uses a different random dropout
+mask, so the predictions vary slightly.
+
+  - Mean of the T predictions      -> final prediction
+  - Variance / std of predictions  -> model (epistemic) uncertainty
+
+Why it works
+------------
+Gal & Ghahramani (2016) showed that a network trained with dropout can be
+interpreted as an approximation to a Bayesian neural network (variational
+inference over the weights). Sampling with dropout on is then approximately
+sampling from the posterior predictive distribution.
+
+Paper: "Dropout as a Bayesian Approximation: Representing Model Uncertainty
+in Deep Learning" (Gal & Ghahramani, ICML 2016)
+
+Algorithm
+---------
+1. Train the model with dropout layers as usual.
+2. At test time, keep dropout active (model in train mode for dropout layers).
+3. Run T forward passes (commonly T = 20-100) on the same input.
+4. Predictive mean      = (1/T) * sum(y_t)
+5. Predictive variance  = (1/T) * sum(y_t^2) - mean^2   (regression)
+   For classification, use predictive entropy or mutual information
+   on the averaged softmax outputs.
+
+Minimal PyTorch example
+-----------------------
+import torch
+import torch.nn as nn
+
+class Net(nn.Module):
+    def __init__(self, in_dim, hidden, out_dim, p=0.2):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(in_dim, hidden), nn.ReLU(), nn.Dropout(p),
+            nn.Linear(hidden, hidden), nn.ReLU(), nn.Dropout(p),
+            nn.Linear(hidden, out_dim),
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+def enable_dropout(model):
+    """Set only Dropout layers to train mode (keeps BatchNorm in eval)."""
+    model.eval()
+    for m in model.modules():
+        if isinstance(m, nn.Dropout):
+            m.train()
+
+@torch.no_grad()
+def mc_predict(model, x, T=50):
+    enable_dropout(model)
+    preds = torch.stack([model(x) for _ in range(T)])  # (T, N, out_dim)
+    return preds.mean(0), preds.var(0)                 # mean, uncertainty
+
+# usage
+# mean, var = mc_predict(model, x_test, T=50)
+
+Classification note
+-------------------
+probs = torch.stack([torch.softmax(model(x), -1) for _ in range(T)])
+mean_probs = probs.mean(0)
+entropy = -(mean_probs * mean_probs.clamp_min(1e-12).log()).sum(-1)
+
+Tips
+----
+- Use BatchNorm in eval mode; only re-enable Dropout layers.
+- Dropout rate p affects uncertainty quality; tune it on validation data.
+- More samples (T) give smoother estimates but cost T forward passes.
+- MC Dropout tends to be under-confident/over-confident in some settings;
+  compare against Deep Ensembles when accuracy of uncertainty matters.
+
+Pros / Cons
+-----------
++ Very easy to implement, no change to training
++ Works with existing dropout-trained models
+- T times slower at inference
+- Uncertainty is only approximate and depends on dropout rate/placement
+
+References
+----------
+- Gal & Ghahramani, 2016. Dropout as a Bayesian Approximation.
+- Lakshminarayanan et al., 2017. Simple and Scalable Predictive Uncertainty
+  Estimation using Deep Ensembles.
